@@ -1,0 +1,38 @@
+import React from 'react';
+import { Search } from 'lucide-react';
+
+export default function Hero() {
+  return (
+    <div className="relative bg-blue-700 text-white">
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1507878866276-a947ef722fee?auto=format&fit=crop&q=80&w=1920"
+          alt="Justice background"
+          className="w-full h-full object-cover opacity-20"
+        />
+      </div>
+      <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+            Commerce for a Better World
+          </h1>
+          <p className="mt-6 max-w-2xl mx-auto text-xl">
+            Supporting peace, justice, and strong institutions through mindful commerce
+          </p>
+          <div className="mt-10 max-w-xl mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search for products..."
+                className="w-full px-4 py-3 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              <div className="absolute right-3 top-3">
+                <Search className="h-6 w-6 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
