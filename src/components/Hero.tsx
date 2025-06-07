@@ -20,16 +20,6 @@ export default function Hero() {
             Supporting peace, justice, and strong institutions through mindful commerce
           </p>
           <div className="mt-10 max-w-xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search for products..."
-                className="w-full px-4 py-3 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-              <div className="absolute right-3 top-3">
-                <Search className="h-6 w-6 text-gray-400" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
