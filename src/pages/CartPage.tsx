@@ -12,7 +12,8 @@ export default function CartPage() {
   const tax = subtotal * 0.08; // 8% tax rate
   const total = subtotal + shipping + tax;
 
-  const handleQuantityChange = (itemId: number, newQuantity: number) => {
+  // FIX: Use string for itemId
+  const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity >= 1) {
       updateQuantity(itemId, newQuantity);
     }
@@ -54,12 +55,16 @@ export default function CartPage() {
                       className="w-24 h-24 object-cover rounded-md"
                     />
                     <div className="ml-6 flex-grow">
-                      <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {item.name}
+                      </h3>
                       <p className="text-sm text-gray-500">{item.category}</p>
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <button
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.quantity - 1)
+                            }
                             disabled={item.quantity <= 1}
                             className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
                           >
@@ -67,7 +72,9 @@ export default function CartPage() {
                           </button>
                           <span className="text-gray-600">{item.quantity}</span>
                           <button
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.quantity + 1)
+                            }
                             className="p-1 rounded-md hover:bg-gray-100"
                           >
                             <Plus className="h-4 w-4" />
@@ -99,7 +106,9 @@ export default function CartPage() {
         {/* Order Summary */}
         <div className="w-full lg:w-96">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Order Summary
+            </h2>
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
@@ -115,7 +124,9 @@ export default function CartPage() {
               </div>
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex justify-between">
-                  <span className="text-lg font-semibold text-gray-900">Total</span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    Total
+                  </span>
                   <span className="text-lg font-semibold text-gray-900">
                     ${total.toFixed(2)}
                   </span>
@@ -123,10 +134,13 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="mt-6 w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+            <Link
+              to="/checkout"
+              className="mt-6 w-full block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+            >
               <CreditCard className="h-5 w-5 mr-2" />
               Proceed to Checkout
-            </button>
+            </Link>
 
             <Link
               to="/shop"

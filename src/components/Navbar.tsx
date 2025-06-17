@@ -45,6 +45,15 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+            {/* Admin Link */}
+            {isAuthenticated && user?.role === "admin" && (
+              <Link
+                to="/admin"
+                className="relative text-lg px-2 py-1 text-red-600 font-semibold transition-colors duration-200 hover:text-red-800 after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-red-700 after:to-red-400 after:scale-x-0 hover:after:scale-x-100 after:origin-left after:transition-transform after:duration-300"
+              >
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* Action/Utility Icons */}

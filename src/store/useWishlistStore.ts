@@ -5,8 +5,8 @@ import type { Product } from '../types';
 interface WishlistState {
   items: Product[];
   addItem: (product: Product) => void;
-  removeItem: (productId: number) => void;
-  isInWishlist: (productId: number) => boolean;
+  removeItem: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
 }
 
 export const useWishlistStore = create(
@@ -19,11 +19,11 @@ export const useWishlistStore = create(
           set({ items: [...items, product] });
         }
       },
-      removeItem: (productId) => {
+      removeItem: (productId: string) => {
         const { items } = get();
         set({ items: items.filter(item => item.id !== productId) });
       },
-      isInWishlist: (productId) => {
+      isInWishlist: (productId: string) => {
         const { items } = get();
         return items.some(item => item.id === productId);
       },

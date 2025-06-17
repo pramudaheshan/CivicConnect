@@ -12,8 +12,7 @@ import { useCart } from "../context/CartContext";
 import { useWishlistStore } from "../store/useWishlistStore";
 
 type Product = {
-  _id: number;
-  id: number;
+  id: string;
   name: string;
   image: string;
   category: string;
@@ -48,8 +47,10 @@ export default function ProductPage() {
         return res.json();
       })
       .then((data) => {
-        // Ensure id is a number
-        setProduct({ ...data, id: Number(data.id) });
+        setProduct({
+          ...data,
+          id: String(data.id), // Ensure always string
+        });
         setLoading(false);
       })
       .catch((err) => {
@@ -60,7 +61,7 @@ export default function ProductPage() {
 
   // Fetch all products for related items
   useEffect(() => {
-    fetch("/api/product")
+    fetch("http://localhost:5000/api/product")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch products");
         return res.json();
@@ -69,7 +70,7 @@ export default function ProductPage() {
         setAllProducts(
           data.map((p: any) => ({
             ...p,
-            id: Number(p.id),
+            id: String(p.id),
           }))
         )
       )
@@ -123,8 +124,8 @@ export default function ProductPage() {
   };
 
   const handleWishlist = () => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+    if (isInWishlist(Number(product.id))) {
+      removeFromWishlist(Number(product.id));
     } else {
       addToWishlist(product);
     }
@@ -137,7 +138,7 @@ export default function ProductPage() {
           .filter(
             (p) =>
               p.category === product.category &&
-              String(p.id) !== String(product.id)
+              p.id !== product.id
           )
           .slice(0, 3)
       : [];
@@ -167,14 +168,14 @@ export default function ProductPage() {
             <button
               onClick={handleWishlist}
               className={`p-2 rounded-full ${
-                isInWishlist(product.id)
+                isInWishlist(Number(product.id))
                   ? "bg-red-100 text-red-600"
                   : "bg-gray-100 text-gray-600 hover:text-red-600"
               }`}
             >
               <Heart
                 className={`h-6 w-6 ${
-                  isInWishlist(product.id) ? "fill-current" : ""
+                  isInWishlist(Number(product.id)) ? "fill-current" : ""
                 }`}
               />
             </button>

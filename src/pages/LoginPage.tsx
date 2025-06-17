@@ -7,6 +7,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  type UserData = {
+    role?: string;
+    isAdmin?: boolean;
+    // add other properties if needed
+  };
+
+  // Use login as defined in the store (returns Promise<void>)
   const { login, register } = useAuthStore((state) => ({
     login: state.login,
     register: state.register,
@@ -20,14 +27,27 @@ export default function LoginPage() {
   });
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     try {
       if (isLogin) {
         await login(formData.email, formData.password);
-        navigate("/profile");
+        // Get the latest user object from the Zustand store
+        const user = useAuthStore.getState().user;
+
+        if (!user) {
+          setError("User data not found. Please log in again.");
+          return;
+        }
+
+        // Redirect based on user role
+        if (user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/profile");
+        }
       } else {
         if (formData.password !== formData.confirmPassword) {
           setError("Passwords do not match");

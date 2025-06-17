@@ -11,6 +11,7 @@ interface User {
 }
 
 interface AuthState {
+  userData: User | null;
   isAuthenticated: any;
   user: User | null;
   token: string | null;
@@ -20,6 +21,7 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  userData: null,
   isAuthenticated: false,
   user: null,
   token: null,
@@ -36,8 +38,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
 
     const data = await res.json();
-    set({ isAuthenticated: true, user: data.user, token: data.token });
+    set({ isAuthenticated: true, user: data.user, token: data.token, userData: data.user });
     localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("user", JSON.stringify(data.user));
   },
 
@@ -60,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: () => {
-    set({ isAuthenticated: false, user: null, token: null });
+    set({ isAuthenticated: false, user: null, token: null, userData: null });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   },

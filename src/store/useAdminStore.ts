@@ -1,80 +1,113 @@
 import { create } from "zustand";
 import type { Product, Order, User } from "../types";
-import { products as initialProducts } from "../data/products";
+
+// Helper: get token from localStorage or zustand auth store as needed
+const getToken = () => localStorage.getItem("token");
 
 interface AdminState {
   products: Product[];
   orders: Order[];
   users: User[];
-  addProduct: (product: Product) => void;
-  updateProduct: (product: Product) => void;
-  deleteProduct: (productId: number) => void;
-  updateOrderStatus: (orderId: string, status: Order["status"]) => void;
-  deleteUser: (userId: string) => void;
+  fetchProducts: () => Promise<void>;
+  addProduct: (product: Omit<Product, "id">) => Promise<void>;
+  updateProduct: (product: Product) => Promise<void>;
+  deleteProduct: (productId: string) => Promise<void>;
+  fetchUsers: () => Promise<void>;
+  updateUser: (user: User) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
+  // Add order actions as needed
 }
 
-export const useAdminStore = create<AdminState>((set) => ({
-  products: initialProducts,
-  orders: [
-    {
-      id: "1",
-      userId: "1",
-      items: [
-        {
-          id: 1,
-          name: "Sustainable Peace Journal",
-          quantity: 2,
-          price: 24.99,
-          description: "",
-          image: "",
-          category: "",
-          rating: 4.8,
-        },
-      ],
-      total: 49.98,
-      status: "delivered",
-      createdAt: "2024-03-15",
-    },
-  ],
-  users: [
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      role: "user",
-      joinDate: "2024-02-01",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "user",
-      joinDate: "2024-02-15",
-    },
-  ],
-  addProduct: (product) =>
+export const useAdminStore = create<AdminState>((set, get) => ({
+  products: [],
+  orders: [],
+  users: [],
+  fetchProducts: async () => {
+    const res = await fetch("http://localhost:5000/api/product");
+    const data = await res.json();
+    set({ products: data });
+  },
+  addProduct: async (product) => {
+    const res = await fetch("http://localhost:5000/api/product", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    });
+    const newProduct = await res.json();
+    set((state) => ({ products: [...state.products, newProduct] }));
+  },
+  updateProduct: async (product) => {
+    const res = await fetch(`http://localhost:5000/api/product/${product.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    });
+    const updated = await res.json();
     set((state) => ({
-      products: [
-        ...state.products,
-        { ...product, id: state.products.length + 1 },
-      ],
-    })),
-  updateProduct: (product) =>
+      products: state.products.map((p) => (p.id === updated.id ? updated : p)),
+    }));
+  },
+  deleteProduct: async (productId) => {
+    await fetch(`http://localhost:5000/api/product/${productId}`, {
+      method: "DELETE",
+    });
     set((state) => ({
-      products: state.products.map((p) => (p.id === product.id ? product : p)),
-    })),
-  deleteProduct: (productId) =>
+      products: state.products.filter((p) => p.id !== String(productId)),
+    }));
+  },
+  // --- User-related actions ---
+  fetchUsers: async () => {
+    const token = getToken();
+    const res = await fetch("http://localhost:5000/api/user", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    set({
+      users: data.map((u: any) => ({
+        id: u._id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        joinDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "",
+        // Map other fields if needed
+      })),
+    });
+  },
+  updateUser: async (user) => {
+    const token = getToken();
+    const res = await fetch(`http://localhost:5000/api/user/${user.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(user),
+    });
+    const updated = await res.json();
     set((state) => ({
-      products: state.products.filter((p) => p.id !== productId),
-    })),
-  updateOrderStatus: (orderId, status) =>
-    set((state) => ({
-      orders: state.orders.map((order) =>
-        order.id === orderId ? { ...order, status } : order
+      users: state.users.map((u) =>
+        u.id === updated._id
+          ? {
+              ...u,
+              ...updated,
+              id: updated._id,
+              joinDate: updated.createdAt
+                ? new Date(updated.createdAt).toLocaleDateString()
+                : u.joinDate,
+            }
+          : u
       ),
-    })),
-  deleteUser: (userId) =>
+    }));
+  },
+  deleteUser: async (userId) => {
+    const token = getToken();
+    await fetch(`http://localhost:5000/api/user/${userId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     set((state) => ({
-      users: state.users.filter((user) => user.id !== userId),
-    })),
+      users: state.users.filter((u) => u.id !== userId),
+    }));
+  },
+  // (Add order actions as needed)
 }));

@@ -1,25 +1,32 @@
-export interface Product {
-  _id: number;
-  id: number;
+export type Product = {
+  _id?: string;
+  id: string;
   name: string;
   price: number;
   description: string;
   image: string;
   category: string;
   rating: number;
-}
+};
+export type CartItem = Product & { quantity: number };
 
-export interface CartItem extends Product {
-  quantity: number;
-}
-
-export interface User {
-  id: string;
-  email: string;
+export type User = {
+  joinDate: any;
+  id: any;
+  _id: string;
   name: string;
-  role: 'user' | 'admin';
+  email: string;
   avatar?: string;
-}
+  role: string;
+  wishlist: { product_id: string; quantity: number }[];
+  cart: { product_id: string; quantity: number }[];
+  notifications: {
+    orders: boolean;
+    promotions: boolean;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
 
 export interface Order {
   id: string;
